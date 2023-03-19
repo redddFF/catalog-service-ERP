@@ -17,9 +17,9 @@ public class CatalogServiceApplication {
 	@Bean
     CommandLineRunner start(CatalogRepository catalogRepository){
         return args -> {
-            catalogRepository.save(new Catalog(1,null,"Insurance"));
-            catalogRepository.save(new Catalog(2,null,"Banking"));
-            catalogRepository.save(new Catalog(3,null,"Insurance"));
+            catalogRepository.save(new Catalog(1,"Insurance",null));
+            catalogRepository.save(new Catalog(2,"Banking",null));
+            catalogRepository.save(new Catalog(3,"Insurance",null));
         };
 	}
 }

@@ -1,9 +1,11 @@
 package com.catalog.catalogservice.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,24 +17,18 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Catalog implements Serializable {
     @Id
-    private Integer id;
-    private Product product;
+    private Integer catalog_id;
     private String businessLine;
 
+    @OneToMany(mappedBy = "catalog")
+    private Set<Product> products;
+
     public Integer getId() {
-        return id;
+        return catalog_id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
+        this.catalog_id = id;
     }
 
     public String getBusinessLine() {
@@ -41,6 +37,14 @@ public class Catalog implements Serializable {
 
     public void setBusinessLine(String businessLine) {
         this.businessLine = businessLine;
+    }
+
+    public Set<Product> getProduct() {
+        return products;
+    }
+
+    public void setProduct(Set<Product> products) {
+        this.products = products;
     }
 
 }

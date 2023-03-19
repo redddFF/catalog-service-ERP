@@ -1,27 +1,49 @@
 package com.catalog.catalogservice.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Product implements Serializable {
     @Id
-    private Integer id;
+    private Integer product_id;
     private String name;
     private String description;
     private String version;
     private String testStatus;
-    private Technology technology;
-    private Resource resource;
 
+    @OneToMany(mappedBy="product")
+    private Set<Resource> resources;
+    
+    @OneToMany(mappedBy="product")
+    private Set<Technology> technologies;
+
+    
+
+    @ManyToOne
+    @JoinColumn(name="catalog_id", nullable=false)
+    private Catalog catalog;
+
+   
     public Integer getId() {
-        return id;
+        return product_id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.product_id = id;
     }
 
     public String getName() {
@@ -56,20 +78,13 @@ public class Product implements Serializable {
         this.testStatus = testStatus;
     }
 
-    public Technology getTechnology() {
-        return technology;
-    }
+   public Set<Resource> getResources(){
+    return resources ; 
+   }
 
-    public void setTechnology(Technology technology) {
-        this.technology = technology;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
+   public Set<Technology> getTechnologies(){
+    return technologies ; 
+   }
+  
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.catalog.catalogservice.model.Catalog;
 import com.catalog.catalogservice.repository.CatalogRepository;
+
 @RestController
 public class CatalogController {
 
@@ -21,12 +22,11 @@ public class CatalogController {
     public void saveCatalog(@RequestBody Catalog catalog) {
         Catalog cg = new Catalog(
                 catalog.getId(),
-                catalog.getProduct(),
-                catalog.getBusinessLine());
+                catalog.getBusinessLine(),
+                catalog.getProduct());
         catalogRepository.save(cg);
 
     }
-
 
     @GetMapping("/getCatalogs")
     public List<Catalog> getAllCatalogs() {
@@ -34,17 +34,15 @@ public class CatalogController {
     }
 
     @DeleteMapping("/deleteCatalog/{id}")
-    public void deleteCatalog(@PathVariable Integer id){
-     catalogRepository.deleteById(id);
+    public void deleteCatalog(@PathVariable Integer id) {
+        catalogRepository.deleteById(id);
 
-       
     }
 
-    @GetMapping("/Catalog/{id}")
-    public Optional<Catalog> findCatalogById(@PathVariable Integer id){
-       return  catalogRepository.findById(id) ;
-       
-        
+    @GetMapping("/catalog/{id}")
+    public Optional<Catalog> findCatalogById(@PathVariable Integer id) {
+        return catalogRepository.findById(id);
+
     }
 
 }
