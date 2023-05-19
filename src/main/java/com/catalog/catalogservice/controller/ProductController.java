@@ -34,7 +34,7 @@ import com.catalog.catalogservice.repository.ProductRepository;
 import com.catalog.catalogservice.repository.ResourceRepository;
 import com.catalog.catalogservice.repository.TechnologyRepository;
 
-@CrossOrigin(origins= "*")
+@CrossOrigin(origins = "*")
 @RestController
 public class ProductController {
 
@@ -48,22 +48,22 @@ public class ProductController {
     @Autowired
     private ResourceRepository resourceRepository;
   
-    @PostMapping(value = "/catalogs/{catalog_id}/addProduct")
+    @PostMapping(value = "/api/catalogs/{catalog_id}/addProduct")
     public void saveProduct(@PathVariable("catalog_id") Integer id , @RequestBody Product product) {
 
+if (product.getFileName()!=null && product.getData()!=null ){
         String fileName = product.getFileName();
         String base64String = product.getData();
         byte[] bytes = Base64.getDecoder().decode(base64String);
         Path path = Paths.get("src/main/resources/public/files/" + fileName);
-        
-      
      try {
         Files.write(path, bytes);
+        product.setImagePath("http://localhost:8081/files/"+fileName);
     } catch (IOException e) {
         
         e.printStackTrace();
     } 
-         
+}     
 
         
         Catalog catalog = catalogRepository.findById(id).orElseThrow(null) ; 
@@ -86,7 +86,7 @@ public class ProductController {
         
 
         if (product!=null){
-            product.setImagePath("http://localhost:8080/files/"+fileName);
+        
             product.setCatalog(catalog);
             product.setResources(res);
             product.setTechnologies(tech);
@@ -98,12 +98,12 @@ public class ProductController {
 
     }
 
-    @GetMapping("/getProducts")
+    @GetMapping("/api/getProducts")
     public List<Product> getAllProducts() {
         return  productRepository.findAll();
     }
 
-    @DeleteMapping("/deleteProduct/{id}")
+    @DeleteMapping("/api/deleteProduct/{id}")
     public void deleteProduct(@PathVariable Integer id) {
         Product product = productRepository.findById(id).orElseThrow(null) ; 
         
@@ -119,24 +119,66 @@ public class ProductController {
 
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/api/product/{id}")
     public Optional<Product> findProductById(@PathVariable Integer id) {
         return productRepository.findById(id);
 
     }
-    @PutMapping("/product/{id}")
-    public ResponseEntity<Product> updateProduct(@RequestBody Product product,@PathVariable Integer id) {
-        Product updatedProduct = productRepository.findById(id)
-                .orElseThrow();
 
-                updatedProduct.setProduct_id(product.getProduct_id());
-                updatedProduct.setName(product.getName());
-                updatedProduct.setDescription(product.getDescription());
-                updatedProduct.setVersion(product.getVersion());
-                updatedProduct.setTestStatus(product.getTestStatus());
-          
-    productRepository.save(updatedProduct);
+    @PutMapping("/api/{catalog_id}/product/{product_id}")
+    public ResponseEntity<Product> updateProduct(@RequestBody Product product,@PathVariable Integer product_id,@PathVariable Integer catalog_id) {
+       Product updating = productRepository.findById(product_id).orElseThrow(null) ; 
+        if (product.getFileName()!=null && product.getData()!=null ){
+            String fileName = product.getFileName();
+            String base64String = product.getData();
+            byte[] bytes = Base64.getDecoder().decode(base64String);
+            Path path = Paths.get("src/main/resources/public/files/" + fileName);
+         try {
+            Files.write(path, bytes);
+            product.setImagePath("http://localhost:8081/files/"+fileName);
+        } catch (IOException e) {
+            
+            e.printStackTrace();
+        } 
+    }
+    List<Integer> technologiesIds = product.getTechnologiesIds() ; 
+    List<Integer> resourcesIds = product.getResourcesIds() ; 
 
-        return ResponseEntity.ok(updatedProduct);
+    Set<Resource>  res = new HashSet<>() ; //[res1,res2,res3]
+    Set<Technology> tech = new HashSet<>() ; //[tech1,tech2]
+
+
+    for (Integer technologyId : technologiesIds) {
+        Technology technology = technologyRepository.findById(technologyId).orElse(null);
+        tech.add(technology) ; 
+    }
+    for (Integer resourceId : resourcesIds){
+        Resource resource = resourceRepository.findById(resourceId).orElseThrow(null);
+        res.add(resource) ; 
+    }     
+    
+    if (updating!=null){
+        if(product.getName()!=null)
+           updating.setName(product.getName());
+        if(product.getDescription()!=null)
+           updating.setDescription(product.getDescription());
+        if(product.getVersion()!=null)
+           updating.setVersion(product.getVersion());
+        if(product.getTestStatus()!=null)
+           updating.setTestStatus(product.getTestStatus());
+        
+           updating.setResources(res);
+           updating.setTechnologies(tech); 
+        if(product.getImagePath()!=null)
+           updating.setImagePath(product.getImagePath());  
+        productRepository.save(updating)  ; 
+    }
+  
+ 
+    
+
+             productRepository.save(updating) ; 
+
+        return ResponseEntity.ok(updating);
     }
 }

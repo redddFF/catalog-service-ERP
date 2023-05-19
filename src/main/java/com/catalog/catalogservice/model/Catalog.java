@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,10 +40,12 @@ public class Catalog implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer catalog_id;
     private String businessLine;
+    private String description ; 
     
   
     
    @OneToMany(mappedBy = "catalog", fetch = FetchType.LAZY)
+   @OnDelete(action = OnDeleteAction.CASCADE)
    @JsonBackReference
    private Set<Product> products; 
 

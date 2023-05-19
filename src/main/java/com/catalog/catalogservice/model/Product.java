@@ -16,6 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -55,11 +57,13 @@ public class Product implements Serializable {
  
     
     @ManyToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(referencedColumnName="technology_id")
     Set<Technology> technologies;
     
    
     @ManyToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(referencedColumnName="resource_id")
     Set<Resource> resources;
     
